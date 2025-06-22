@@ -337,12 +337,6 @@ img {
     background-repeat: no-repeat;
 }
 
-/* 슬라이더 메인 이미지는 위아래 잘리지 않도록 설정 */
-.carousel-item.bg-img {
-    background-size: contain;
-    background-color: #000; /* 여백 부분을 검은색으로 채움 */
-}
-
 .bg-gray {
     background-color: #f6f6f6;
 }
@@ -665,12 +659,6 @@ img {
     cursor: pointer;
     -webkit-transition-duration: 500ms;
     transition-duration: 500ms;
-}
-
-/* 인디케이터 이미지도 위아래 잘리지 않도록 설정 */
-.carousel-indicators li.bg-img {
-    background-size: contain;
-    background-color: #333; /* 인디케이터 여백은 어두운 회색 */
 }
 
 .carousel-indicators li:after,
