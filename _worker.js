@@ -80,12 +80,21 @@ export default {
                 const formData = await request.formData();
                 const artistName = formData.get('name');
                 const artistBio = formData.get('bio');
+                const bannerImageIndex = parseInt(formData.get('bannerImageIndex') || '0');
                 const files = formData.getAll('images');
 
-                console.log('Artist data:', { name: artistName, bio: artistBio, fileCount: files.length });
+                console.log('Artist data:', { name: artistName, bio: artistBio, bannerImageIndex, fileCount: files.length });
 
                 if (!artistName) {
                     return jsonResponse({ error: 'Artist name is required' }, 400);
+                }
+
+                if (files.length === 0) {
+                    return jsonResponse({ error: 'At least one image is required' }, 400);
+                }
+
+                if (bannerImageIndex >= files.length || bannerImageIndex < 0) {
+                    return jsonResponse({ error: 'Invalid banner image index' }, 400);
                 }
 
                 const artistId = `artist_${Date.now()}`;
@@ -115,6 +124,8 @@ export default {
                     name: artistName,
                     bio: artistBio,
                     images: imageUrls,
+                    bannerImageIndex: bannerImageIndex,
+                    bannerImage: imageUrls[bannerImageIndex] // Store direct banner image URL for easy access
                 };
 
                 console.log('Saving artist data:', artistData);

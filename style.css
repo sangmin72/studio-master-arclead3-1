@@ -8,3 +8,75 @@
     ---------------------------------------------------------- */
 
     /* ============ PLACE YOUR CUSTOM CSS HERE ============ */
+
+    /* Fix for passive event listener warnings */
+    body, html {
+        touch-action: pan-y;
+    }
+
+    .owl-carousel, .gallery_area, .portfolio-column {
+        touch-action: pan-y;
+    }
+
+    /* Prevent default touch behaviors on interactive elements */
+    .owl-stage, .owl-item {
+        touch-action: pan-y;
+    }
+
+    /* Fix for drag and touch events */
+    img {
+        touch-action: none;
+        -webkit-user-drag: none;
+        -khtml-user-drag: none;
+        -moz-user-drag: none;
+        -o-user-drag: none;
+        user-drag: none;
+    }
+
+    /* Admin page styles */
+    .image-preview-item {
+        border: 2px solid transparent;
+        padding: 10px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .image-preview-item.selected {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+
+    .image-preview-item img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .banner-selection {
+        margin-top: 8px;
+    }
+
+    .banner-selection input[type="radio"] {
+        margin-right: 5px;
+    }
+
+    .artist-item {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
+
+    .banner-image-preview {
+        border: 2px solid #28a745;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f8fff9;
+    }
+
+    .image-item-admin {
+        position: relative;
+    }
+
+    .badge {
+        font-size: 0.7em;
+        margin-top: 5px;
+    }
