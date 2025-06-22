@@ -90,9 +90,8 @@ async function loadSliderImages() {
             const slideNumber = String(index + 1).padStart(2, '0');
             
             const carouselItem = `
-                <div class="carousel-item h-100 ${activeClass}" style="position: relative; background-color: #1a1a1a;">
-                    <img src="${image.url}" alt="${image.artistName}" style="width: 100%; height: 100vh; object-fit: contain; object-position: center; position: absolute; top: 0; left: 0; z-index: 1;">
-                    <div class="carousel-content h-100" style="position: relative; z-index: 2;">
+                <div class="carousel-item h-100 bg-img ${activeClass}" style="background-image: url(${image.url});">
+                    <div class="carousel-content h-100">
                         <div class="slide-text">
                             <span>${slideNumber}.</span>
                             <h2>${image.artistName}</h2>

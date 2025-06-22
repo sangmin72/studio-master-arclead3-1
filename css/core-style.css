@@ -337,14 +337,6 @@ img {
     background-repeat: no-repeat;
 }
 
-/* Slider specific background image settings */
-.carousel-item.bg-img {
-    background-position: center center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-color: #000;
-}
-
 .bg-gray {
     background-color: #f6f6f6;
 }

@@ -239,37 +239,6 @@
         background-color: #007bff;
     }
 
-    /* Carousel image optimization */
-    .carousel-item.bg-img {
-        background-position: center center !important;
-        background-size: contain !important;
-        background-repeat: no-repeat !important;
-        background-color: #1a1a1a !important;
-    }
-
-    /* Alternative: Use object-fit for better image display */
-    .carousel-item img {
-        width: 100%;
-        height: 100vh;
-        object-fit: contain;
-        object-position: center;
-    }
-
-    /* Enhance text visibility on carousel */
-    .carousel-content .slide-text {
-        background: rgba(0, 0, 0, 0.5);
-        padding: 20px;
-        border-radius: 10px;
-        backdrop-filter: blur(5px);
-    }
-
-    .carousel-content .slide-text h2,
-    .carousel-content .slide-text span,
-    .carousel-content .slide-text p {
-        color: white !important;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    }
-
     /* Header DateTime Display */
     .header-datetime {
         display: flex;
