@@ -42,20 +42,12 @@
         $portfolioMenu.empty();
         $portfolioColumn.empty();
 
-        // Function to create safe CSS class names
-        function createSafeClassName(name) {
-            return 'artist-' + name.toLowerCase()
-                .replace(/\s+/g, '-')           // Replace spaces with hyphens
-                .replace(/[^a-z0-9\-가-힣]/g, '') // Allow Korean characters, remove others
-                .replace(/--+/g, '-')           // Replace multiple hyphens with single
-                .replace(/^-|-$/g, '');         // Remove leading/trailing hyphens
-        }
-
         // Populate filter buttons
         $portfolioMenu.append('<button class="active btn" type="button" data-filter="*">All</button>');
         artists.forEach(artist => {
             if (artist.images && artist.images.length > 0) {
-                const filterClass = createSafeClassName(artist.name);
+                // Use artist ID for reliable filtering
+                const filterClass = `artist-${artist.id}`;
                 $portfolioMenu.append(`<button class="btn" type="button" data-filter=".${filterClass}">${artist.name}</button>`);
                 console.log(`Added filter button for ${artist.name} with class: ${filterClass}`);
             }
@@ -65,10 +57,11 @@
         let galleryItemsHTML = '';
         artists.forEach(artist => {
             if (artist.images && artist.images.length > 0) {
-                const filterClass = createSafeClassName(artist.name);
+                // Use artist ID for reliable filtering
+                const filterClass = `artist-${artist.id}`;
                 artist.images.forEach(imageUrl => {
                     galleryItemsHTML += `
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 column_single_gallery_item ${filterClass}">
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 column_single_gallery_item ${filterClass}" data-artist-id="${artist.id}" data-artist-name="${artist.name}">
                             <img src="${imageUrl}" alt="${artist.name}">
                             <div class="hover_overlay">
                                 <a class="gallery_img" href="${imageUrl}"><i class="fa fa-eye"></i></a>
@@ -118,16 +111,35 @@
                 
                 // Filter items on button click
                 $portfolioMenu.on('click', 'button', function () {
-                    const filterValue = $(this).attr('data-filter');
-                    console.log('Filtering by:', filterValue); // Debug log
+                    const $button = $(this);
+                    const filterValue = $button.attr('data-filter');
                     
+                    console.log('Filtering by:', filterValue);
+                    console.log('Available items:', $portfolioColumn.find('.column_single_gallery_item').length);
+                    
+                    if (filterValue === '*') {
+                        console.log('Showing all items');
+                    } else {
+                        const matchingItems = $portfolioColumn.find(filterValue);
+                        console.log('Matching items for', filterValue, ':', matchingItems.length);
+                        matchingItems.each(function(index) {
+                            console.log(`Item ${index}:`, $(this).attr('class'));
+                        });
+                    }
+                    
+                    // Apply filter
                     $grid.isotope({
                         filter: filterValue
                     });
                     
                     // Update active class
                     $portfolioMenu.find('.active').removeClass('active');
-                    $(this).addClass('active');
+                    $button.addClass('active');
+                    
+                    // Force layout after a short delay
+                    setTimeout(() => {
+                        $grid.isotope('layout');
+                    }, 100);
                 });
                 
                 console.log('Isotope initialized with', $portfolioColumn.find('.column_single_gallery_item').length, 'items');
