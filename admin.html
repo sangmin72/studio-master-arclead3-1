@@ -46,7 +46,12 @@
                     <div class="main-menu h-100">
                         <nav class="navbar h-100 navbar-expand-lg">
                             <!-- Logo Area  -->
-                            <a class="navbar-brand" href="index.html"><img src="img/core-img/logo.png" alt="Logo"></a>
+                            <a class="navbar-brand" href="index.html"><img src="img/logos/logo-horizon-arclead.png" alt="Logo"></a>
+                            
+                            <!-- Date Time Display -->
+                            <div class="header-datetime" id="header-datetime">
+                                <span id="current-datetime">2025년 01월 01일 00:00:00</span>
+                            </div>
 
                             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#studioMenu" aria-controls="studioMenu" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i> Menu</button>
 
@@ -104,10 +109,8 @@
     <div class="social-sidebar-area bg-white">
         <!-- Social Area -->
         <div class="social-info-area">
-            <a href="#" data-toggle="tooltip" data-placement="right" title="Facebook"><i class="fa fa-facebook" aria-hidden="true"></i> <span>Facebook</span></a>
-            <a href="#" data-toggle="tooltip" data-placement="right" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i> <span>Twitter</span></a>
-            <a href="#" data-toggle="tooltip" data-placement="right" title="Pinterest"><i class="fa fa-pinterest" aria-hidden="true"></i> <span>Pinterest</span></a>
-            <a href="#" data-toggle="tooltip" data-placement="right" title="Behance"><i class="fa fa-behance" aria-hidden="true"></i> <span>Behance</span></a>
+            <a href="#" data-toggle="tooltip" data-placement="right" title="YouTube"><i class="fa fa-youtube" aria-hidden="true"></i> <span>YouTube</span></a>
+            <a href="#" data-toggle="tooltip" data-placement="right" title="Instagram"><i class="fa fa-instagram" aria-hidden="true"></i> <span>Instagram</span></a>
         </div>
         <!-- Message Box -->
         <div class="message-box">
@@ -130,24 +133,96 @@
                         <!-- Artist Form -->
                         <form id="artist-form" enctype="multipart/form-data">
                             <div class="form-group">
-                                <label for="artist-name">Artist Name</label>
-                                <input type="text" class="form-control" id="artist-name" placeholder="Enter artist name" required>
+                                <label for="artist-english-name">영문명 (English Name) *</label>
+                                <input type="text" class="form-control" id="artist-english-name" placeholder="Enter english name (used as ID)" required>
+                                <small class="form-text text-muted">영문명은 시스템 ID로 사용됩니다. 변경 시 주의하세요.</small>
                             </div>
                             <div class="form-group">
-                                <label for="artist-bio">Bio</label>
-                                <textarea class="form-control" id="artist-bio" rows="4" placeholder="Enter artist bio"></textarea>
+                                <label for="artist-name">이름 (Korean Name) *</label>
+                                <input type="text" class="form-control" id="artist-name" placeholder="Enter korean name" required>
                             </div>
                             <div class="form-group">
-                                <label for="artist-images">Images</label>
-                                <input type="file" class="form-control-file" id="artist-images" multiple accept="image/*">
-                                <small class="form-text text-muted">Select multiple images. You'll be able to choose a banner image after upload.</small>
+                                <label for="artist-short-intro">짧은 소개 (Short Introduction)</label>
+                                <input type="text" class="form-control" id="artist-short-intro" placeholder="Enter short introduction" maxlength="100">
+                                <small class="form-text text-muted">메인 페이지 슬라이더에 표시될 짧은 소개글입니다.</small>
                             </div>
                             
-                            <!-- Image Preview Area -->
-                            <div id="image-preview-container" class="mt-3" style="display: none;">
-                                <label>Select Banner Image:</label>
-                                <div id="image-preview-grid" class="row">
-                                    <!-- Preview images will be shown here -->
+                            <!-- 이력 섹션 -->
+                            <div class="form-group">
+                                <label>이력 (Career History)</label>
+                                <div class="career-section">
+                                    <!-- 드라마 -->
+                                    <div class="career-category mb-4">
+                                        <h5>드라마 (Drama)</h5>
+                                        <div id="drama-career" class="career-items">
+                                            <!-- 동적으로 추가될 연도/작품 -->
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary add-career-year" data-category="drama">+ 연도 추가</button>
+                                    </div>
+                                    
+                                    <!-- 웹드라마 -->
+                                    <div class="career-category mb-4">
+                                        <h5>웹드라마 (Web Drama)</h5>
+                                        <div id="webdrama-career" class="career-items">
+                                            <!-- 동적으로 추가될 연도/작품 -->
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary add-career-year" data-category="webdrama">+ 연도 추가</button>
+                                    </div>
+                                    
+                                    <!-- 영화 -->
+                                    <div class="career-category mb-4">
+                                        <h5>영화 (Movie)</h5>
+                                        <div id="movie-career" class="career-items">
+                                            <!-- 동적으로 추가될 연도/작품 -->
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary add-career-year" data-category="movie">+ 연도 추가</button>
+                                    </div>
+                                    
+                                    <!-- 광고 -->
+                                    <div class="career-category mb-4">
+                                        <h5>광고 (Commercial)</h5>
+                                        <div id="commercial-career" class="career-items">
+                                            <!-- 동적으로 추가될 연도/작품 -->
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary add-career-year" data-category="commercial">+ 연도 추가</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 사진 섹션 -->
+                            <div class="form-group">
+                                <label>사진 (Images)</label>
+                                
+                                <!-- 이미지 업로드 -->
+                                <div class="image-upload-section mb-3">
+                                    <label for="artist-images">이미지 업로드</label>
+                                    <input type="file" class="form-control-file" id="artist-images" multiple accept="image/*">
+                                    <small class="form-text text-muted">아티스트의 모든 이미지를 업로드하세요. 업로드 후 배너 이미지를 선택할 수 있습니다.</small>
+                                </div>
+                                
+                                <!-- 이미지 미리보기 및 배너 선택 -->
+                                <div id="image-preview-container" class="mt-3" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Home Banner 선택:</label>
+                                            <div id="home-banner-selection" class="banner-selection-grid">
+                                                <!-- 동적으로 생성될 라디오 버튼들 -->
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>Artists Banner 선택:</label>
+                                            <div id="artists-banner-selection" class="banner-selection-grid">
+                                                <!-- 동적으로 생성될 라디오 버튼들 -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <label>업로드된 이미지들:</label>
+                                        <div id="image-preview-grid" class="row">
+                                            <!-- 이미지 미리보기가 여기에 표시됩니다 -->
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -184,6 +259,8 @@
     <script src="js/active.js"></script>
     <!-- Admin js -->
     <script src="js/admin.js"></script>
+    <!-- DateTime js -->
+    <script src="js/datetime.js"></script>
 
 </body>
 

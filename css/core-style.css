@@ -553,8 +553,8 @@ img {
 /* :: 5.0 Sidebar Area CSS */
 
 .social-sidebar-area {
-    width: 120px;
-    height: 72%;
+    width: 60px;
+    height: 29%;
     background-color: transparent;
     position: fixed;
     bottom: 100px;
@@ -570,8 +570,8 @@ img {
     -webkit-transform: rotate(-90deg);
     transform: rotate(-90deg);
     position: absolute;
-    bottom: 270px;
-    left: -110px;
+    bottom: 135px;
+    left: -55px;
     z-index: 10;
     -webkit-box-pack: center;
     -ms-flex-pack: center;
@@ -602,15 +602,15 @@ img {
 }
 
 .message-box > a {
-    width: 120px;
-    height: 100px;
+    width: 60px;
+    height: 50px;
     position: absolute;
     left: 0;
     bottom: 0;
     background-color: #101010;
     text-align: center;
     color: #fff;
-    font-size: 30px;
+    font-size: 15px;
     display: -moz-flex;
     display: -ms-flex;
     display: -o-flex;
@@ -626,7 +626,7 @@ img {
 }
 
 .message-box > a > img {
-    max-width: 40px;
+    max-width: 20px;
 }
 
 /* :: 6.0 Welcome Area CSS */

@@ -92,12 +92,26 @@ export default {
                 if (!env.ARTIST_BUCKET || !env.ARTIST_KV) return jsonResponse({ error: "Configuration error: ARTIST_BUCKET or ARTIST_KV binding not found." }, 500);
                 
                 const formData = await request.formData();
+                const englishName = formData.get('englishName');
                 const artistName = formData.get('name');
-                const artistBio = formData.get('bio');
-                const bannerImageIndex = parseInt(formData.get('bannerImageIndex') || '0');
+                const shortIntro = formData.get('shortIntro');
+                const careerData = formData.get('career');
+                const homeBannerIndex = parseInt(formData.get('homeBannerIndex') || '0');
+                const artistsBannerIndex = parseInt(formData.get('artistsBannerIndex') || '0');
                 const files = formData.getAll('images');
 
-                console.log('Artist data:', { name: artistName, bio: artistBio, bannerImageIndex, fileCount: files.length });
+                console.log('Artist data:', { 
+                    englishName, 
+                    name: artistName, 
+                    shortIntro, 
+                    homeBannerIndex,
+                    artistsBannerIndex,
+                    imageCount: files.length 
+                });
+
+                if (!englishName) {
+                    return jsonResponse({ error: 'English name is required' }, 400);
+                }
 
                 if (!artistName) {
                     return jsonResponse({ error: 'Artist name is required' }, 400);
@@ -107,13 +121,29 @@ export default {
                     return jsonResponse({ error: 'At least one image is required' }, 400);
                 }
 
-                if (bannerImageIndex >= files.length || bannerImageIndex < 0) {
-                    return jsonResponse({ error: 'Invalid banner image index' }, 400);
+                if (homeBannerIndex >= files.length || homeBannerIndex < 0) {
+                    return jsonResponse({ error: 'Invalid home banner index' }, 400);
                 }
 
-                const artistId = `artist_${Date.now()}`;
-                const imageUrls = [];
+                if (artistsBannerIndex >= files.length || artistsBannerIndex < 0) {
+                    return jsonResponse({ error: 'Invalid artists banner index' }, 400);
+                }
 
+                // Use englishName as the artist ID (after sanitizing)
+                const artistId = englishName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                
+                // Parse career data
+                let career = {};
+                if (careerData) {
+                    try {
+                        career = JSON.parse(careerData);
+                    } catch (e) {
+                        console.error('Failed to parse career data:', e);
+                    }
+                }
+
+                // Upload all images
+                const imageUrls = [];
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
                     if (file instanceof File && file.name) {
@@ -135,11 +165,15 @@ export default {
 
                 const artistData = {
                     id: artistId,
+                    englishName: englishName,
                     name: artistName,
-                    bio: artistBio,
+                    shortIntro: shortIntro || '',
+                    career: career,
                     images: imageUrls,
-                    bannerImageIndex: bannerImageIndex,
-                    bannerImage: imageUrls[bannerImageIndex] // Store direct banner image URL for easy access
+                    homeBannerIndex: homeBannerIndex,
+                    artistsBannerIndex: artistsBannerIndex,
+                    homeBanner: imageUrls[homeBannerIndex], // For backward compatibility
+                    artistsBanner: imageUrls[artistsBannerIndex] // For backward compatibility
                 };
 
                 console.log('Saving artist data:', artistData);
@@ -175,9 +209,33 @@ export default {
                 const [_, id] = deleteMatch;
                 
                 const artistData = await env.ARTIST_KV.get(id, 'json');
-                if (artistData && artistData.images && artistData.images.length > 0) {
-                    const imageKeys = artistData.images.map(url => url.replace('/images/', ''));
-                    await env.ARTIST_BUCKET.delete(imageKeys);
+                if (artistData) {
+                    // Delete all images for this artist
+                    const imagesToDelete = [];
+                    
+                    if (artistData.images && artistData.images.length > 0) {
+                        imagesToDelete.push(...artistData.images.map(url => url.replace('/images/', '')));
+                    }
+                    
+                    // Delete old format images if they exist (backward compatibility)
+                    if (artistData.homeBanner) {
+                        imagesToDelete.push(artistData.homeBanner.replace('/images/', ''));
+                    }
+                    if (artistData.artistsBanner) {
+                        imagesToDelete.push(artistData.artistsBanner.replace('/images/', ''));
+                    }
+                    if (artistData.additionalImages && artistData.additionalImages.length > 0) {
+                        imagesToDelete.push(...artistData.additionalImages.map(url => url.replace('/images/', '')));
+                    }
+                    
+                    // Delete all images
+                    for (const imageKey of imagesToDelete) {
+                        try {
+                            await env.ARTIST_BUCKET.delete(imageKey);
+                        } catch (error) {
+                            console.error(`Failed to delete image ${imageKey}:`, error);
+                        }
+                    }
                 }
 
                 await env.ARTIST_KV.delete(id);

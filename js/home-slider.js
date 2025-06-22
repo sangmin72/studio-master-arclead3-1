@@ -24,21 +24,18 @@ async function loadSliderImages() {
             return;
         }
         
-        // Collect banner images from all artists
+        // Collect home banner images from all artists
         let bannerImages = [];
         artists.forEach(artist => {
-            if (artist.bannerImage) {
-                bannerImages.push({
-                    url: artist.bannerImage,
-                    artistName: artist.name
-                });
-            } else if (artist.images && artist.images.length > 0) {
-                // Fallback to first image if no banner image specified
-                const bannerIndex = artist.bannerImageIndex || 0;
-                bannerImages.push({
-                    url: artist.images[bannerIndex],
-                    artistName: artist.name
-                });
+            if (artist.images && artist.images.length > 0 && artist.homeBannerIndex !== undefined) {
+                const homeBannerUrl = artist.images[artist.homeBannerIndex];
+                if (homeBannerUrl) {
+                    bannerImages.push({
+                        url: homeBannerUrl,
+                        artistName: artist.name,
+                        shortIntro: artist.shortIntro || ''
+                    });
+                }
             }
         });
         
@@ -67,6 +64,7 @@ async function loadSliderImages() {
                         <div class="slide-text">
                             <span>${slideNumber}.</span>
                             <h2>${image.artistName}</h2>
+                            ${image.shortIntro ? `<p>${image.shortIntro}</p>` : ''}
                         </div>
                     </div>
                 </div>

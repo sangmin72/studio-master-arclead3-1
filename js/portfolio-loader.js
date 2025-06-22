@@ -45,7 +45,10 @@
         // Populate filter buttons
         $portfolioMenu.append('<button class="active btn" type="button" data-filter="*">All</button>');
         artists.forEach(artist => {
-            if (artist.images && artist.images.length > 0) {
+            // Check if artist has any images to display
+            const hasImages = artist.images && artist.images.length > 0;
+            
+            if (hasImages) {
                 // Use artist ID for reliable filtering
                 const filterClass = `artist-${artist.id}`;
                 $portfolioMenu.append(`<button class="btn" type="button" data-filter=".${filterClass}">${artist.name}</button>`);
@@ -57,18 +60,19 @@
         let galleryItemsHTML = '';
         artists.forEach(artist => {
             if (artist.images && artist.images.length > 0) {
-                // Use artist ID for reliable filtering
                 const filterClass = `artist-${artist.id}`;
-                artist.images.forEach(imageUrl => {
+                
+                artist.images.forEach((imageUrl, index) => {
                     galleryItemsHTML += `
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3 column_single_gallery_item ${filterClass}" data-artist-id="${artist.id}" data-artist-name="${artist.name}">
-                            <img src="${imageUrl}" alt="${artist.name}">
+                            <img src="${imageUrl}" alt="${artist.name} - Image ${index + 1}">
                             <div class="hover_overlay">
                                 <a class="gallery_img" href="${imageUrl}"><i class="fa fa-eye"></i></a>
                             </div>
                         </div>
                     `;
                 });
+                
                 console.log(`Added ${artist.images.length} images for ${artist.name} with class: ${filterClass}`);
             }
         });

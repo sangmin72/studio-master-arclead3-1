@@ -1,34 +1,45 @@
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
     .social-sidebar-area,
     .message-box > a {
-        width: 80px;
+        width: 50px;
     }
     .message-box > a {
-        height: 80px;
+        height: 40px;
+        font-size: 12px;
+    }
+    .message-box > a > img {
+        max-width: 15px;
     }
     .social-info-area {
-        left: -160px;
+        left: -80px;
     }
     .gallery_area {
         height: calc(100% - 380px);
-        width: calc(100% - 180px);
-        left: 120px;
-        right: 60px;
+        width: calc(100% - 120px);
+        left: 70px;
+        right: 50px;
         padding-right: 45px;
     }
     .social-sidebar-area {
-        height: 65%;
+        height: 26%;
     }
     .social-info-area {
-        left: -25px;
-        bottom: 190px;
+        left: -15px;
+        bottom: 95px;
     }
     .social-info-area > a > span {
         display: none;
     }
     .social-info-area a i {
-        font-size: 14px;
-        margin-right: 10px;
+        font-size: 12px;
+        margin-right: 8px;
+    }
+    .header-datetime {
+        font-size: 12px;
+        margin-left: 15px;
+    }
+    .header-datetime span {
+        padding: 4px 8px;
     }
 }
 
@@ -64,25 +75,29 @@
     }
     .social-sidebar-area,
     .message-box > a {
-        width: 80px;
+        width: 50px;
     }
     .message-box > a {
-        height: 80px;
+        height: 40px;
+        font-size: 12px;
+    }
+    .message-box > a > img {
+        max-width: 15px;
     }
     .social-sidebar-area {
         bottom: 50px;
-        height: 70%;
+        height: 28%;
     }
     .social-info-area {
-        left: -25px;
-        bottom: 190px;
+        left: -15px;
+        bottom: 95px;
     }
     .social-info-area > a > span {
         display: none;
     }
     .social-info-area a i {
-        font-size: 14px;
-        margin-right: 10px;
+        font-size: 12px;
+        margin-right: 8px;
     }
     .slide-text {
         margin-left: 120px;
@@ -96,10 +111,10 @@
     }
     .gallery_area {
         height: calc(100% - 380px);
-        width: calc(100% - 130px);
-        left: 100px;
-        right: 30px;
-        padding-right: 30px;
+        width: calc(100% - 80px);
+        left: 70px;
+        right: 10px;
+        padding-right: 20px;
     }
     .portfolio-menu button {
         padding: 0 10px;
@@ -113,6 +128,13 @@
     .elements-title h2 {
         font-size: 24px;
         margin-bottom: 50px;
+    }
+    .header-datetime {
+        font-size: 12px;
+        margin-left: 15px;
+    }
+    .header-datetime span {
+        padding: 4px 8px;
     }
 }
 
@@ -163,20 +185,25 @@
     }
     .social-sidebar-area,
     .message-box > a {
-        width: 50px;
+        width: 30px;
     }
     .message-box > a {
-        height: 50px;
+        height: 25px;
+        font-size: 10px;
+    }
+    .message-box > a > img {
+        max-width: 12px;
     }
     .social-sidebar-area {
         bottom: 40px;
+        height: 12%;
     }
     .carousel-indicators li {
         height: 40px;
     }
     .social-info-area {
-        left: -27px;
-        bottom: 130px;
+        left: -20px;
+        bottom: 65px;
     }
     .social-info-area > a > span {
         display: none;
@@ -187,7 +214,7 @@
     }
     .slide-text {
         padding: 15px 15px 10px;
-        margin-left: 65px;
+        margin-left: 45px;
         margin-top: -40px;
     }
     .slide-text span {
@@ -237,14 +264,14 @@
     }
     .gallery_area {
         height: auto;
-        width: calc(100% - 90px);
+        width: calc(100% - 50px);
         overflow-y: auto;
         position: relative;
         z-index: 1;
         top: 100px;
-        left: 60px;
-        right: 15px;
-        padding-right: 15px;
+        left: 40px;
+        right: 10px;
+        padding-right: 10px;
     }
     .portfolio-menu button {
         font-size: 12px;
@@ -275,7 +302,7 @@
     }
     .contact-core-info {
         width: 200px;
-        left: -40px;
+        left: -20px;
         padding: 15px;
     }
     .single-cool-fact {
@@ -290,6 +317,14 @@
     }
     .message-box > a > img {
         max-width: 30px;
+    }
+    .header-datetime {
+        font-size: 10px;
+        margin-left: 10px;
+    }
+    .header-datetime span {
+        padding: 3px 6px;
+        font-size: 9px;
     }
 }
 

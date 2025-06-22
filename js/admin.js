@@ -1,64 +1,240 @@
 document.addEventListener('DOMContentLoaded', () => {
     const artistForm = document.getElementById('artist-form');
     const artistListContainer = document.getElementById('artist-list-container');
+    
+    // New form elements
+    const artistEnglishNameInput = document.getElementById('artist-english-name');
+    const artistNameInput = document.getElementById('artist-name');
+    const artistShortIntroInput = document.getElementById('artist-short-intro');
     const artistImagesInput = document.getElementById('artist-images');
     const imagePreviewContainer = document.getElementById('image-preview-container');
     const imagePreviewGrid = document.getElementById('image-preview-grid');
+    const homeBannerSelection = document.getElementById('home-banner-selection');
+    const artistsBannerSelection = document.getElementById('artists-banner-selection');
 
     const API_BASE_URL = '/admin/api';
-    let selectedBannerIndex = 0; // Index of selected banner image
+    
+    // Career management
+    let careerData = {
+        drama: {},
+        webdrama: {},
+        movie: {},
+        commercial: {}
+    };
+
+    // Image management
+    let selectedHomeBannerIndex = 0;
+    let selectedArtistsBannerIndex = 0;
+    let uploadedImages = [];
 
     /**
-     * Handles image file selection and shows preview
+     * Career management functions
+     */
+    function addCareerYear(category) {
+        const container = document.getElementById(`${category}-career`);
+        const yearId = `${category}-${Date.now()}`;
+        
+        const yearItem = document.createElement('div');
+        yearItem.className = 'career-year-item';
+        yearItem.setAttribute('data-year-id', yearId);
+        
+        yearItem.innerHTML = `
+            <div class="career-year-header">
+                <input type="number" class="form-control career-year-input" placeholder="연도" min="1900" max="2100" 
+                       onchange="updateCareerYear('${category}', '${yearId}', this.value)">
+                <button type="button" class="btn btn-sm btn-remove" onclick="removeCareerYear('${category}', '${yearId}')">연도 삭제</button>
+            </div>
+            <div class="career-works" id="${yearId}-works">
+                <!-- 작품들이 여기에 추가됨 -->
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary add-work-btn" 
+                    onclick="addCareerWork('${category}', '${yearId}')">+ 작품 추가</button>
+        `;
+        
+        container.appendChild(yearItem);
+        
+        // Initialize career data for this year
+        if (!careerData[category]) careerData[category] = {};
+        careerData[category][yearId] = { year: '', works: [] };
+    }
+
+    function removeCareerYear(category, yearId) {
+        const yearItem = document.querySelector(`[data-year-id="${yearId}"]`);
+        if (yearItem) {
+            yearItem.remove();
+            delete careerData[category][yearId];
+        }
+    }
+
+    function updateCareerYear(category, yearId, year) {
+        if (!careerData[category]) careerData[category] = {};
+        if (!careerData[category][yearId]) careerData[category][yearId] = { year: '', works: [] };
+        careerData[category][yearId].year = year;
+    }
+
+    function addCareerWork(category, yearId) {
+        const worksContainer = document.getElementById(`${yearId}-works`);
+        const workId = `work-${Date.now()}`;
+        
+        const workItem = document.createElement('div');
+        workItem.className = 'career-work-item';
+        workItem.setAttribute('data-work-id', workId);
+        
+        workItem.innerHTML = `
+            <input type="text" class="form-control career-work-input" placeholder="작품명" 
+                   onchange="updateCareerWork('${category}', '${yearId}', '${workId}', this.value)">
+            <button type="button" class="btn btn-sm btn-remove" onclick="removeCareerWork('${category}', '${yearId}', '${workId}')">삭제</button>
+        `;
+        
+        worksContainer.appendChild(workItem);
+        
+        // Initialize work data
+        if (!careerData[category][yearId].works) careerData[category][yearId].works = [];
+        careerData[category][yearId].works.push({ id: workId, name: '' });
+    }
+
+    function removeCareerWork(category, yearId, workId) {
+        const workItem = document.querySelector(`[data-work-id="${workId}"]`);
+        if (workItem) {
+            workItem.remove();
+            // Remove from data
+            if (careerData[category] && careerData[category][yearId]) {
+                careerData[category][yearId].works = careerData[category][yearId].works.filter(work => work.id !== workId);
+            }
+        }
+    }
+
+    function updateCareerWork(category, yearId, workId, workName) {
+        if (!careerData[category]) careerData[category] = {};
+        if (!careerData[category][yearId]) careerData[category][yearId] = { year: '', works: [] };
+        
+        const work = careerData[category][yearId].works.find(w => w.id === workId);
+        if (work) {
+            work.name = workName;
+        }
+    }
+
+    // Make functions global for onclick handlers
+    window.addCareerYear = addCareerYear;
+    window.removeCareerYear = removeCareerYear;
+    window.updateCareerYear = updateCareerYear;
+    window.addCareerWork = addCareerWork;
+    window.removeCareerWork = removeCareerWork;
+    window.updateCareerWork = updateCareerWork;
+
+    /**
+     * Image handling functions
      */
     function handleImageSelection() {
         const files = artistImagesInput.files;
         if (files.length === 0) {
             imagePreviewContainer.style.display = 'none';
+            uploadedImages = [];
             return;
         }
 
+        uploadedImages = Array.from(files);
         imagePreviewContainer.style.display = 'block';
-        imagePreviewGrid.innerHTML = '';
-        selectedBannerIndex = 0; // Reset to first image
+        
+        // Reset selections
+        selectedHomeBannerIndex = 0;
+        selectedArtistsBannerIndex = 0;
 
-        Array.from(files).forEach((file, index) => {
+        // Clear previous content
+        imagePreviewGrid.innerHTML = '';
+        homeBannerSelection.innerHTML = '';
+        artistsBannerSelection.innerHTML = '';
+
+        // Process each image
+        uploadedImages.forEach((file, index) => {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const col = document.createElement('div');
-                col.className = 'col-md-3 col-sm-4 col-6 mb-3';
+            reader.onload = function(e) {
+                const imageUrl = e.target.result;
                 
-                const isSelected = index === selectedBannerIndex;
+                // Add to preview grid
+                const col = document.createElement('div');
+                col.className = 'col-md-3 col-sm-4 col-6';
                 col.innerHTML = `
-                    <div class="image-preview-item ${isSelected ? 'selected' : ''}" data-index="${index}">
-                        <img src="${e.target.result}" class="img-fluid rounded" alt="Preview">
-                        <div class="banner-selection mt-2">
-                            <input type="radio" name="banner-image" value="${index}" ${isSelected ? 'checked' : ''} id="banner-${index}">
-                            <label for="banner-${index}" class="form-check-label">Banner Image</label>
-                        </div>
+                    <div class="image-item">
+                        <img src="${imageUrl}" alt="Image ${index + 1}">
+                        <span class="banner-badge home-banner-badge ${index === selectedHomeBannerIndex ? '' : 'd-none'}" id="home-badge-${index}">HOME</span>
+                        <span class="banner-badge artists-banner-badge ${index === selectedArtistsBannerIndex ? '' : 'd-none'}" id="artists-badge-${index}">ARTISTS</span>
                     </div>
                 `;
-                
                 imagePreviewGrid.appendChild(col);
+
+                // Add to banner selection lists
+                const homeBannerItem = document.createElement('div');
+                homeBannerItem.className = `banner-selection-item ${index === selectedHomeBannerIndex ? 'selected' : ''}`;
+                homeBannerItem.innerHTML = `
+                    <input type="radio" name="home-banner" value="${index}" ${index === selectedHomeBannerIndex ? 'checked' : ''}>
+                    <img src="${imageUrl}" alt="Image ${index + 1}">
+                    <span>Image ${index + 1}</span>
+                `;
+                homeBannerSelection.appendChild(homeBannerItem);
+
+                const artistsBannerItem = document.createElement('div');
+                artistsBannerItem.className = `banner-selection-item ${index === selectedArtistsBannerIndex ? 'selected' : ''}`;
+                artistsBannerItem.innerHTML = `
+                    <input type="radio" name="artists-banner" value="${index}" ${index === selectedArtistsBannerIndex ? 'checked' : ''}>
+                    <img src="${imageUrl}" alt="Image ${index + 1}">
+                    <span>Image ${index + 1}</span>
+                `;
+                artistsBannerSelection.appendChild(artistsBannerItem);
             };
             reader.readAsDataURL(file);
         });
     }
 
-    /**
-     * Handles banner image selection
-     */
-    function handleBannerSelection(event) {
-        if (event.target.name === 'banner-image') {
-            selectedBannerIndex = parseInt(event.target.value);
-            
-            // Update visual selection
-            document.querySelectorAll('.image-preview-item').forEach(item => {
-                item.classList.remove('selected');
+    function updateBannerSelection(bannerType, selectedIndex) {
+        if (bannerType === 'home') {
+            selectedHomeBannerIndex = selectedIndex;
+            // Update badges
+            uploadedImages.forEach((_, index) => {
+                const badge = document.getElementById(`home-badge-${index}`);
+                if (badge) {
+                    badge.classList.toggle('d-none', index !== selectedIndex);
+                }
             });
-            event.target.closest('.image-preview-item').classList.add('selected');
+            // Update selection items
+            homeBannerSelection.querySelectorAll('.banner-selection-item').forEach((item, index) => {
+                item.classList.toggle('selected', index === selectedIndex);
+            });
+        } else if (bannerType === 'artists') {
+            selectedArtistsBannerIndex = selectedIndex;
+            // Update badges
+            uploadedImages.forEach((_, index) => {
+                const badge = document.getElementById(`artists-badge-${index}`);
+                if (badge) {
+                    badge.classList.toggle('d-none', index !== selectedIndex);
+                }
+            });
+            // Update selection items
+            artistsBannerSelection.querySelectorAll('.banner-selection-item').forEach((item, index) => {
+                item.classList.toggle('selected', index === selectedIndex);
+            });
         }
     }
+
+    // Setup image input handler
+    artistImagesInput.addEventListener('change', handleImageSelection);
+
+    // Setup banner selection handlers
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'home-banner') {
+            updateBannerSelection('home', parseInt(e.target.value));
+        } else if (e.target.name === 'artists-banner') {
+            updateBannerSelection('artists', parseInt(e.target.value));
+        }
+    });
+
+    // Setup career year addition buttons
+    document.querySelectorAll('.add-career-year').forEach(button => {
+        button.addEventListener('click', function() {
+            const category = this.getAttribute('data-category');
+            addCareerYear(category);
+        });
+    });
 
     /**
      * Fetches all artists and renders them on the page.
@@ -100,43 +276,62 @@ document.addEventListener('DOMContentLoaded', () => {
             artistElement.className = 'artist-item mb-4 p-3 border rounded';
             artistElement.setAttribute('data-id', artist.id);
 
-            let imagesHTML = '<p>No images.</p>';
-            let bannerImageHTML = '';
+            // Create career summary
+            let careerSummary = '';
+            if (artist.career) {
+                const totalWorks = Object.values(artist.career).reduce((total, categoryWorks) => {
+                    return total + (Array.isArray(categoryWorks) ? categoryWorks.reduce((sum, yearData) => sum + yearData.works.length, 0) : 0);
+                }, 0);
+                careerSummary = `총 ${totalWorks}개 작품`;
+            }
+
+            // Create images display
+            let imagesHTML = '';
             if (artist.images && artist.images.length > 0) {
-                imagesHTML = artist.images.map((imgUrl, index) => {
-                    const isBanner = index === (artist.bannerImageIndex || 0);
-                    const bannerBadge = isBanner ? '<span class="badge badge-primary">Banner</span>' : '';
-                    return `
-                        <div class="image-item-admin" style="display: inline-block; margin-right: 10px; margin-bottom: 10px; text-align: center;">
-                            <img src="${imgUrl}" alt="${artist.name}" class="img-thumbnail" width="100">
-                            <div>${bannerBadge}</div>
+                imagesHTML += `
+                    <div class="image-section mb-2">
+                        <h6>업로드된 이미지들 (${artist.images.length}개):</h6>
+                        <div class="d-flex flex-wrap">
+                            ${artist.images.map((imgUrl, index) => {
+                                let badges = '';
+                                if (index === artist.homeBannerIndex) {
+                                    badges += '<span class="badge badge-success mr-1">HOME</span>';
+                                }
+                                if (index === artist.artistsBannerIndex) {
+                                    badges += '<span class="badge badge-primary mr-1">ARTISTS</span>';
+                                }
+                                return `
+                                    <div class="image-item-admin mr-2 mb-2" style="position: relative;">
+                                        <img src="${imgUrl}" alt="Image ${index + 1}" class="img-thumbnail" style="max-width: 100px;">
+                                        <div style="position: absolute; top: 5px; right: 5px;">${badges}</div>
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
-                    `;
-                }).join('');
-                
-                // Show banner image separately
-                const bannerIndex = artist.bannerImageIndex || 0;
-                if (artist.images[bannerIndex]) {
-                    bannerImageHTML = `
-                        <div class="banner-image-preview mb-3">
-                            <h6>Banner Image:</h6>
-                            <img src="${artist.images[bannerIndex]}" alt="${artist.name} Banner" class="img-fluid rounded" style="max-width: 200px;">
-                        </div>
-                    `;
-                }
+                        <small class="text-muted">
+                            Home Banner: ${artist.homeBannerIndex + 1}번째 이미지, 
+                            Artists Banner: ${artist.artistsBannerIndex + 1}번째 이미지
+                        </small>
+                    </div>
+                `;
+            }
+
+            if (!imagesHTML) {
+                imagesHTML = '<p class="text-muted">이미지 없음</p>';
             }
 
             artistElement.innerHTML = `
-                <h5>${artist.name}</h5>
-                <p>${artist.bio || 'No bio provided.'}</p>
-                ${bannerImageHTML}
-                <div class="all-images">
-                    <h6>All Images:</h6>
-                    <div class="d-flex flex-wrap">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5>${artist.name} <small class="text-muted">(${artist.englishName || artist.id})</small></h5>
+                        <p><strong>짧은 소개:</strong> ${artist.shortIntro || '소개글 없음'}</p>
+                        <p><strong>이력:</strong> ${careerSummary || '이력 없음'}</p>
                         ${imagesHTML}
                     </div>
+                    <div class="col-md-4 text-right">
+                        <button class="btn btn-danger btn-sm delete-artist-btn">Delete</button>
+                    </div>
                 </div>
-                <button class="btn btn-danger btn-sm mt-3 delete-artist-btn">Delete</button>
             `;
             artistListContainer.appendChild(artistElement);
         });
@@ -149,23 +344,51 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleFormSubmit(event) {
         event.preventDefault();
 
-        const artistNameInput = document.getElementById('artist-name');
-        const artistBioInput = document.getElementById('artist-bio');
-        const artistImagesInput = document.getElementById('artist-images');
-        
-        if (artistImagesInput.files.length === 0) {
-            alert('Please select at least one image.');
+        // Validation
+        if (!artistEnglishNameInput.value.trim()) {
+            alert('영문명을 입력해주세요.');
             return;
         }
         
-        const formData = new FormData();
-        formData.append('name', artistNameInput.value);
-        formData.append('bio', artistBioInput.value);
-        formData.append('bannerImageIndex', selectedBannerIndex.toString());
-        
-        for (const file of artistImagesInput.files) {
-            formData.append('images', file);
+        if (!artistNameInput.value.trim()) {
+            alert('이름을 입력해주세요.');
+            return;
         }
+
+        if (uploadedImages.length === 0) {
+            alert('최소 1개의 이미지를 업로드해주세요.');
+            return;
+        }
+
+        // Prepare career data for submission
+        const processedCareerData = {};
+        Object.keys(careerData).forEach(category => {
+            processedCareerData[category] = [];
+            Object.values(careerData[category]).forEach(yearData => {
+                if (yearData.year && yearData.works && yearData.works.length > 0) {
+                    const validWorks = yearData.works.filter(work => work.name.trim());
+                    if (validWorks.length > 0) {
+                        processedCareerData[category].push({
+                            year: parseInt(yearData.year),
+                            works: validWorks.map(work => work.name.trim())
+                        });
+                    }
+                }
+            });
+        });
+        
+        const formData = new FormData();
+        formData.append('englishName', artistEnglishNameInput.value.trim());
+        formData.append('name', artistNameInput.value.trim());
+        formData.append('shortIntro', artistShortIntroInput.value.trim());
+        formData.append('career', JSON.stringify(processedCareerData));
+        formData.append('homeBannerIndex', selectedHomeBannerIndex.toString());
+        formData.append('artistsBannerIndex', selectedArtistsBannerIndex.toString());
+        
+        // Add all images
+        uploadedImages.forEach(file => {
+            formData.append('images', file);
+        });
 
         try {
             const response = await fetch(`${API_BASE_URL}/artists`, {
@@ -192,9 +415,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Clear the form and reload the artists
             artistForm.reset();
+            careerData = { drama: {}, webdrama: {}, movie: {}, commercial: {} };
+            uploadedImages = [];
+            selectedHomeBannerIndex = 0;
+            selectedArtistsBannerIndex = 0;
+            
+            // Clear career sections
+            ['drama', 'webdrama', 'movie', 'commercial'].forEach(category => {
+                document.getElementById(`${category}-career`).innerHTML = '';
+            });
+            
+            // Clear image previews
             imagePreviewContainer.style.display = 'none';
-            selectedBannerIndex = 0;
+            imagePreviewGrid.innerHTML = '';
+            homeBannerSelection.innerHTML = '';
+            artistsBannerSelection.innerHTML = '';
+            
             loadArtists();
+            alert('아티스트가 성공적으로 저장되었습니다.');
 
         } catch (error) {
             console.error('Error submitting form:', error);
@@ -249,8 +487,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add event listeners
     artistForm.addEventListener('submit', handleFormSubmit);
     artistListContainer.addEventListener('click', handleArtistListClick);
-    artistImagesInput.addEventListener('change', handleImageSelection);
-    imagePreviewGrid.addEventListener('change', handleBannerSelection);
 
     // Initial load
     loadArtists();
