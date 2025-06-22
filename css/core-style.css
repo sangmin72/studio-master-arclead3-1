@@ -333,8 +333,14 @@ img {
 
 .bg-img {
     background-position: center center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
+}
+
+/* 슬라이더 메인 이미지는 위아래 잘리지 않도록 설정 */
+.carousel-item.bg-img {
+    background-size: contain;
+    background-color: #000; /* 여백 부분을 검은색으로 채움 */
 }
 
 .bg-gray {
@@ -656,10 +662,15 @@ img {
     margin-left: 0;
     text-indent: -9999999px;
     background-color: #fff;
-    background-size: contain;
     cursor: pointer;
     -webkit-transition-duration: 500ms;
     transition-duration: 500ms;
+}
+
+/* 인디케이터 이미지도 위아래 잘리지 않도록 설정 */
+.carousel-indicators li.bg-img {
+    background-size: contain;
+    background-color: #333; /* 인디케이터 여백은 어두운 회색 */
 }
 
 .carousel-indicators li:after,
