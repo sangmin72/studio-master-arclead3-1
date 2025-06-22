@@ -68,6 +68,7 @@
                             <img src="${imageUrl}" alt="${artist.name} - Image ${index + 1}">
                             <div class="hover_overlay">
                                 <a class="gallery_img" href="${imageUrl}"><i class="fa fa-eye"></i></a>
+                                <a class="artist_profile" href="artist.html?id=${artist.id}" title="View ${artist.name}'s Profile"><i class="fa fa-user"></i></a>
                             </div>
                         </div>
                     `;

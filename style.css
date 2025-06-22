@@ -239,6 +239,177 @@
         background-color: #007bff;
     }
 
+    /* Artist Profile Page Styles */
+    .artist-profile-area {
+        min-height: calc(100vh - 100px);
+    }
+
+    .artist-image-slideshow {
+        min-height: 100vh;
+        position: relative;
+    }
+
+    .artist-image-slideshow .carousel-item {
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .artist-image-slideshow .carousel-item img {
+        width: 100%;
+        height: 100vh;
+        object-fit: cover;
+    }
+
+    .artist-profile-content {
+        background-color: rgba(255, 255, 255, 0.95);
+        min-height: 100vh;
+        padding: 60px 0;
+    }
+
+    .artist-name {
+        color: #333;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .artist-short-intro {
+        color: #666;
+        font-size: 1.2rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .career-title {
+        color: #333;
+        font-weight: 600;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+        margin-bottom: 2rem;
+    }
+
+    .career-category {
+        margin-bottom: 2rem;
+    }
+
+    .career-category-title {
+        color: #495057;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        padding: 8px 15px;
+        background-color: #f8f9fa;
+        border-left: 4px solid #007bff;
+    }
+
+    .career-year-group {
+        margin-bottom: 1.5rem;
+        padding-left: 20px;
+    }
+
+    .career-year {
+        color: #666;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .career-works {
+        list-style: none;
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+
+    .career-works li {
+        color: #555;
+        margin-bottom: 0.3rem;
+        position: relative;
+    }
+
+    .career-works li:before {
+        content: "•";
+        color: #007bff;
+        font-weight: bold;
+        position: absolute;
+        left: -15px;
+    }
+
+    .back-to-portfolio .btn {
+        padding: 12px 30px;
+        font-weight: 600;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 991px) {
+        .artist-image-slideshow {
+            min-height: 50vh;
+        }
+
+        .artist-image-slideshow .carousel-item img {
+            height: 50vh;
+        }
+
+        .artist-profile-content {
+            min-height: auto;
+            padding: 40px 0;
+        }
+
+        .artist-name {
+            font-size: 2rem;
+        }
+
+        .artist-short-intro {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .artist-profile-content .p-5 {
+            padding: 2rem !important;
+        }
+
+        .artist-name {
+            font-size: 1.8rem;
+        }
+
+                 .artist-short-intro {
+             font-size: 1rem;
+         }
+     }
+
+    /* Portfolio Gallery Artist Profile Link */
+    .hover_overlay {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .hover_overlay .artist_profile {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: #333;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .hover_overlay .artist_profile:hover {
+        background-color: #007bff;
+        color: white;
+        transform: scale(1.1);
+        text-decoration: none;
+    }
+
+    .hover_overlay .artist_profile i {
+        font-size: 18px;
+    }
+
     /* Header DateTime Display */
     .header-datetime {
         display: flex;
