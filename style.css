@@ -80,3 +80,23 @@
         font-size: 0.7em;
         margin-top: 5px;
     }
+
+    /* Portfolio filtering styles */
+    .column_single_gallery_item {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .column_single_gallery_item.hidden {
+        display: none !important;
+    }
+
+    .portfolio-menu .btn {
+        margin: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .portfolio-menu .btn.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }

@@ -94,9 +94,62 @@
             });
         }
 
+        // Simple JavaScript-based filtering (as primary method)
+        function simpleFilter(filterValue) {
+            console.log('Simple filter:', filterValue);
+            const allItems = $portfolioColumn.find('.column_single_gallery_item');
+            
+            if (filterValue === '*') {
+                // Show all items
+                allItems.removeClass('hidden').show();
+                console.log('Showing all', allItems.length, 'items');
+            } else {
+                // Hide all first
+                allItems.addClass('hidden').hide();
+                
+                // Show matching items
+                const matchingItems = $portfolioColumn.find(filterValue);
+                matchingItems.removeClass('hidden').show();
+                
+                console.log('Showing', matchingItems.length, 'items for filter:', filterValue);
+                
+                if (matchingItems.length === 0) {
+                    console.warn('No items found for filter:', filterValue);
+                    console.log('Available items:');
+                    allItems.each(function(index) {
+                        console.log(`Item ${index}:`, $(this).attr('class'));
+                    });
+                }
+            }
+        }
+
+        // Set up simple click handlers first (primary method)
+        $portfolioMenu.off('click', 'button');
+        $portfolioMenu.on('click', 'button', function(e) {
+            e.preventDefault();
+            
+            const $button = $(this);
+            const filterValue = $button.attr('data-filter');
+            
+            console.log('=== SIMPLE FILTER ===');
+            console.log('Button:', $button.text());
+            console.log('Filter:', filterValue);
+            
+            // Apply simple filter
+            simpleFilter(filterValue);
+            
+            // Update active state
+            $portfolioMenu.find('.active').removeClass('active');
+            $button.addClass('active');
+            
+            console.log('=== FILTER COMPLETE ===');
+        });
+
         // 2. Re-initialize Isotope (Masonry Layout)
         if ($.fn.imagesLoaded && $.fn.isotope) {
             $portfolioColumn.imagesLoaded(function () {
+                console.log('Images loaded, initializing Isotope...');
+                
                 // Init Isotope
                 const $grid = $portfolioColumn.isotope({
                     itemSelector: '.column_single_gallery_item',
@@ -106,31 +159,58 @@
                     }
                 });
 
+                console.log('Isotope initialized with', $portfolioColumn.find('.column_single_gallery_item').length, 'items');
+                
+                // Log all items and their classes
+                $portfolioColumn.find('.column_single_gallery_item').each(function(index) {
+                    console.log(`Item ${index} classes:`, $(this).attr('class'));
+                });
+
                 // Remove any existing click handlers to prevent duplicates
                 $portfolioMenu.off('click', 'button');
                 
                 // Filter items on button click
-                $portfolioMenu.on('click', 'button', function () {
+                $portfolioMenu.on('click', 'button', function (e) {
+                    e.preventDefault();
+                    
                     const $button = $(this);
                     const filterValue = $button.attr('data-filter');
                     
-                    console.log('Filtering by:', filterValue);
-                    console.log('Available items:', $portfolioColumn.find('.column_single_gallery_item').length);
+                    console.log('=== FILTER CLICKED ===');
+                    console.log('Button text:', $button.text());
+                    console.log('Filter value:', filterValue);
+                    console.log('Total items:', $portfolioColumn.find('.column_single_gallery_item').length);
                     
                     if (filterValue === '*') {
                         console.log('Showing all items');
+                        // Show all items manually
+                        $portfolioColumn.find('.column_single_gallery_item').show();
                     } else {
+                        console.log('Looking for items with class:', filterValue);
                         const matchingItems = $portfolioColumn.find(filterValue);
-                        console.log('Matching items for', filterValue, ':', matchingItems.length);
-                        matchingItems.each(function(index) {
-                            console.log(`Item ${index}:`, $(this).attr('class'));
-                        });
+                        console.log('Found matching items:', matchingItems.length);
+                        
+                        if (matchingItems.length === 0) {
+                            console.error('No matching items found! Available classes:');
+                            $portfolioColumn.find('.column_single_gallery_item').each(function(index) {
+                                console.log(`Item ${index}:`, $(this).attr('class'));
+                            });
+                        }
+                        
+                        // Manual show/hide as fallback
+                        $portfolioColumn.find('.column_single_gallery_item').hide();
+                        matchingItems.show();
                     }
                     
-                    // Apply filter
-                    $grid.isotope({
-                        filter: filterValue
-                    });
+                    // Apply Isotope filter
+                    try {
+                        $grid.isotope({
+                            filter: filterValue
+                        });
+                        console.log('Isotope filter applied successfully');
+                    } catch (error) {
+                        console.error('Isotope filter error:', error);
+                    }
                     
                     // Update active class
                     $portfolioMenu.find('.active').removeClass('active');
@@ -138,11 +218,39 @@
                     
                     // Force layout after a short delay
                     setTimeout(() => {
-                        $grid.isotope('layout');
-                    }, 100);
+                        try {
+                            $grid.isotope('layout');
+                            console.log('Isotope layout refreshed');
+                        } catch (error) {
+                            console.error('Isotope layout error:', error);
+                        }
+                    }, 200);
+                    
+                    console.log('=== FILTER END ===');
                 });
+            });
+        } else {
+            console.error('Isotope or imagesLoaded not available');
+            
+            // Fallback: Simple show/hide without Isotope
+            $portfolioMenu.off('click', 'button');
+            $portfolioMenu.on('click', 'button', function (e) {
+                e.preventDefault();
                 
-                console.log('Isotope initialized with', $portfolioColumn.find('.column_single_gallery_item').length, 'items');
+                const $button = $(this);
+                const filterValue = $button.attr('data-filter');
+                
+                console.log('Fallback filtering by:', filterValue);
+                
+                if (filterValue === '*') {
+                    $portfolioColumn.find('.column_single_gallery_item').show();
+                } else {
+                    $portfolioColumn.find('.column_single_gallery_item').hide();
+                    $portfolioColumn.find(filterValue).show();
+                }
+                
+                $portfolioMenu.find('.active').removeClass('active');
+                $button.addClass('active');
             });
         }
     }
