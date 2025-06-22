@@ -333,7 +333,7 @@ img {
 
 .bg-img {
     background-position: center center;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
 }
 
@@ -656,6 +656,7 @@ img {
     margin-left: 0;
     text-indent: -9999999px;
     background-color: #fff;
+    background-size: contain;
     cursor: pointer;
     -webkit-transition-duration: 500ms;
     transition-duration: 500ms;
