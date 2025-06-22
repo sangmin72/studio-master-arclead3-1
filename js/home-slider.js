@@ -104,18 +104,44 @@ async function loadSliderImages() {
             $carouselInner.append(carouselItem);
         });
         
-        // Update carousel indicators
+        // Update carousel indicators with low-res images
         const $carouselIndicators = $('.carousel-indicators');
         $carouselIndicators.empty();
         
-        selectedImages.forEach((image, index) => {
-            const activeClass = index === 0 ? 'active' : '';
-            
-            const indicator = `
-                <li data-target="#welcomeSlider" data-slide-to="${index}" class="${activeClass} bg-img" style="background-image: url(${image.url});"></li>
-            `;
-            
-            $carouselIndicators.append(indicator);
+        // Create low-res versions for indicators
+        const indicatorPromises = selectedImages.map((image, index) => {
+            return new Promise((resolve) => {
+                // 로컬 이미지나 CORS 문제가 있을 수 있으므로 원본 이미지도 대비
+                if (image.url.startsWith('/images/') || image.url.startsWith('img/')) {
+                    // API 이미지나 로컬 이미지는 저해상도 처리 시도
+                    createLowResImageForIndicator(image.url, (lowResUrl) => {
+                        const activeClass = index === 0 ? 'active' : '';
+                        
+                        const indicator = `
+                            <li data-target="#welcomeSlider" data-slide-to="${index}" class="${activeClass} bg-img" style="background-image: url(${lowResUrl});"></li>
+                        `;
+                        
+                        resolve({ index, indicator });
+                    });
+                } else {
+                    // 외부 이미지는 원본 사용
+                    const activeClass = index === 0 ? 'active' : '';
+                    
+                    const indicator = `
+                        <li data-target="#welcomeSlider" data-slide-to="${index}" class="${activeClass} bg-img" style="background-image: url(${image.url});"></li>
+                    `;
+                    
+                    resolve({ index, indicator });
+                }
+            });
+        });
+        
+        // Add indicators in order
+        Promise.all(indicatorPromises).then((results) => {
+            results.sort((a, b) => a.index - b.index);
+            results.forEach(result => {
+                $carouselIndicators.append(result.indicator);
+            });
         });
         
         // Reinitialize the carousel to ensure proper functionality
@@ -146,6 +172,49 @@ async function loadSliderImages() {
             $('#welcomeSlider').carousel('cycle');
         }, 500);
     }
+}
+
+// Create low-resolution image for indicators
+function createLowResImageForIndicator(originalImageUrl, callback) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous'; // CORS 처리
+    img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 인디케이터용 매우 작은 크기 (최대 100px)
+        const maxSize = 100;
+        let { width, height } = img;
+        
+        if (width > height) {
+            if (width > maxSize) {
+                height = (height * maxSize) / width;
+                width = maxSize;
+            }
+        } else {
+            if (height > maxSize) {
+                width = (width * maxSize) / height;
+                height = maxSize;
+            }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and compress heavily
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to very low quality JPEG for indicators
+        const lowResImageUrl = canvas.toDataURL('image/jpeg', 0.3);
+        callback(lowResImageUrl);
+    };
+    
+    img.onerror = function() {
+        // 에러 시 원본 이미지 사용
+        callback(originalImageUrl);
+    };
+    
+    img.src = originalImageUrl;
 }
 
 // Fisher-Yates shuffle algorithm
