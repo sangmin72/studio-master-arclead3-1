@@ -119,10 +119,8 @@ export default {
                 return jsonResponse({ success: true });
             }
 
-            // For Pages Functions, any request that doesn't match a function route
-            // will automatically fall through to the static assets handler.
-            // So we can return a 404 here for unmatched API routes.
-            return new Response('404 Not Found', { status: 404 });
+            // If the request does not match any of the API routes, fall through to serving static assets.
+            return env.ASSETS.fetch(request);
 
         } catch (e) {
             console.error(e);
