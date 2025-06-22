@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- Title  -->
+    <title>Studio - Admin</title>
+
+    <!-- Favicon  -->
+    <link rel="icon" href="img/core-img/favicon.ico">
+
+    <!-- Core Style CSS -->
+    <link rel="stylesheet" href="css/core-style.css">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Responsive CSS -->
+    <link href="css/responsive.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="showbox">
+            <div class="loader">
+                <svg class="circular" viewBox="25 25 50 50">
+                    <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gradient Background Overlay -->
+    <div class="gradient-background-overlay"></div>
+
+    <!-- Header Area Start -->
+    <header class="header-area">
+        <div class="container-fluid h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-12 h-100">
+                    <div class="main-menu h-100">
+                        <nav class="navbar h-100 navbar-expand-lg">
+                            <!-- Logo Area  -->
+                            <a class="navbar-brand" href="index.html"><img src="img/core-img/logo.png" alt="Logo"></a>
+
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#studioMenu" aria-controls="studioMenu" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i> Menu</button>
+
+                            <div class="collapse navbar-collapse" id="studioMenu">
+                                <!-- Menu Area Start  -->
+                                <ul class="navbar-nav ml-auto">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="index.html">Home</a>
+                                    </li>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pages</a>
+                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                            <a class="dropdown-item" href="index.html">Home</a>
+                                            <a class="dropdown-item" href="about-me.html">About</a>
+                                            <a class="dropdown-item" href="portfolio.html">Portfolio</a>
+                                            <a class="dropdown-item" href="blog.html">Blog</a>
+                                            <a class="dropdown-item" href="contact.html">Contact</a>
+                                            <a class="dropdown-item" href="elements.html">Elements</a>
+                                        </div>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="about-me.html">About</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="portfolio.html">Portfolio</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="blog.html">Blog</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="contact.html">contact</a>
+                                    </li>
+                                </ul>
+                                <!-- Search Form -->
+                                <div class="header-search-form ml-auto">
+                                    <form action="#">
+                                        <input type="search" class="form-control" placeholder="Input your keyword then press enter..." id="search" name="search">
+                                        <input class="d-none" type="submit" value="submit">
+                                    </form>
+                                </div>
+                                <!-- Search btn -->
+                                <div id="searchbtn">
+                                    <img src="img/core-img/search.png" alt="">
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Header Area End -->
+    
+    <!-- Social Sidebar Area Start -->
+    <div class="social-sidebar-area bg-white">
+        <!-- Social Area -->
+        <div class="social-info-area">
+            <a href="#" data-toggle="tooltip" data-placement="right" title="Facebook"><i class="fa fa-facebook" aria-hidden="true"></i> <span>Facebook</span></a>
+            <a href="#" data-toggle="tooltip" data-placement="right" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i> <span>Twitter</span></a>
+            <a href="#" data-toggle="tooltip" data-placement="right" title="Pinterest"><i class="fa fa-pinterest" aria-hidden="true"></i> <span>Pinterest</span></a>
+            <a href="#" data-toggle="tooltip" data-placement="right" title="Behance"><i class="fa fa-behance" aria-hidden="true"></i> <span>Behance</span></a>
+        </div>
+        <!-- Message Box -->
+        <div class="message-box">
+            <a href="#" data-toggle="modal" data-target=".contact-modal-lg"><img src="img/core-img/envelope.png" alt=""></a>
+        </div>
+    </div>
+    <!-- Social Sidebar Area End -->
+
+    <!-- ##### Admin Area Start ##### -->
+    <section class="about-me-area section-padding-100-0">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8">
+                    <div class="about-me-content">
+                        
+                        <div class="section-heading">
+                            <h2>Artist Management</h2>
+                        </div>
+
+                        <!-- Artist Form -->
+                        <form id="artist-form" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="artist-name">Artist Name</label>
+                                <input type="text" class="form-control" id="artist-name" placeholder="Enter artist name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="artist-bio">Bio</label>
+                                <textarea class="form-control" id="artist-bio" rows="4" placeholder="Enter artist bio"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="artist-images">Images</label>
+                                <input type="file" class="form-control-file" id="artist-images" multiple>
+                            </div>
+                            <button type="submit" class="btn studio-btn mt-30">Save Artist</button>
+                        </form>
+
+                        <hr class="mt-5 mb-5">
+
+                        <!-- Artist List -->
+                        <div class="artist-list">
+                            <h3>Existing Artists</h3>
+                            <div id="artist-list-container">
+                                <!-- Artists will be dynamically loaded here -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ##### Admin Area End ##### -->
+
+
+    <!-- jQuery (Necessary for All JavaScript Plugins) -->
+    <script src="js/jquery/jquery-2.2.4.min.js"></script>
+    <!-- Popper js -->
+    <script src="js/popper.min.js"></script>
+    <!-- Bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Plugins js -->
+    <script src="js/plugins.js"></script>
+    <!-- Active js -->
+    <script src="js/active.js"></script>
+    <!-- Admin js -->
+    <script src="js/admin.js"></script>
+
+</body>
+
+</html> 
