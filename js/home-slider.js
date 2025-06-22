@@ -39,16 +39,40 @@ async function loadSliderImages() {
             }
         });
         
+        // If no banner images found, create default slides to maintain 13 slides
         if (bannerImages.length === 0) {
-            console.log('No banner images found, keeping default slider');
-            return;
+            console.log('No banner images found, creating default slides');
+            bannerImages = [
+                { url: 'img/bg-img/1.jpg', artistName: 'Believe you can fly', shortIntro: '' },
+                { url: 'img/bg-img/2.jpg', artistName: 'Believe you can fly', shortIntro: '' },
+                { url: 'img/bg-img/3.jpg', artistName: 'Believe you can fly', shortIntro: '' }
+            ];
         }
         
         // Shuffle banner images for variety
         bannerImages = shuffleArray(bannerImages);
         
-        // Take up to 13 images (matching original slider count)
-        const selectedImages = bannerImages.slice(0, 13);
+        // Always maintain 13 slides by repeating images if necessary
+        const selectedImages = [];
+        const targetSlideCount = 13;
+        
+        for (let i = 0; i < targetSlideCount; i++) {
+            const imageIndex = i % bannerImages.length;
+            const originalImage = bannerImages[imageIndex];
+            
+            // Add cycle information for repeated images
+            const cycleNumber = Math.floor(i / bannerImages.length) + 1;
+            const isRepeated = cycleNumber > 1;
+            
+            selectedImages.push({
+                ...originalImage,
+                cycleNumber: cycleNumber,
+                isRepeated: isRepeated,
+                originalIndex: imageIndex
+            });
+        }
+        
+        console.log(`Created ${selectedImages.length} slides from ${bannerImages.length} unique banner images`);
         
         // Update carousel items
         const $carouselInner = $('.carousel-inner');
@@ -87,7 +111,14 @@ async function loadSliderImages() {
             $carouselIndicators.append(indicator);
         });
         
-        console.log(`Slider updated with ${selectedImages.length} images from artists`);
+        // Reinitialize the carousel to ensure proper functionality
+        $('#welcomeSlider').carousel('dispose');
+        $('#welcomeSlider').carousel({
+            interval: 5000,
+            pause: 'hover'
+        });
+        
+        console.log(`Slider updated with ${selectedImages.length} slides (${bannerImages.length} unique images, repeated as needed)`);
         
     } catch (error) {
         console.error('Error loading slider images:', error);
