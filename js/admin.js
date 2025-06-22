@@ -125,6 +125,41 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Image handling functions
      */
+    function createLowResImage(originalImageUrl, callback) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set low resolution dimensions (max 150px width/height for admin preview)
+            const maxSize = 150;
+            let { width, height } = img;
+            
+            if (width > height) {
+                if (width > maxSize) {
+                    height = (height * maxSize) / width;
+                    width = maxSize;
+                }
+            } else {
+                if (height > maxSize) {
+                    width = (width * maxSize) / height;
+                    height = maxSize;
+                }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Draw and compress
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convert to low quality JPEG (0.4 quality for smaller file size)
+            const lowResImageUrl = canvas.toDataURL('image/jpeg', 0.4);
+            callback(lowResImageUrl);
+        };
+        img.src = originalImageUrl;
+    }
+
     function handleImageSelection() {
         const files = artistImagesInput.files;
         if (files.length === 0) {
@@ -149,38 +184,52 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadedImages.forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = function(e) {
-                const imageUrl = e.target.result;
+                const originalImageUrl = e.target.result;
                 
-                // Add to preview grid
+                // Add placeholder first
                 const col = document.createElement('div');
                 col.className = 'col-md-3 col-sm-4 col-6';
                 col.innerHTML = `
                     <div class="image-item">
-                        <img src="${imageUrl}" alt="Image ${index + 1}">
+                        <div style="width: 120px; height: 120px; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                            <small class="text-muted">Loading...</small>
+                        </div>
                         <span class="banner-badge home-banner-badge ${index === selectedHomeBannerIndex ? '' : 'd-none'}" id="home-badge-${index}">HOME</span>
                         <span class="banner-badge artists-banner-badge ${index === selectedArtistsBannerIndex ? '' : 'd-none'}" id="artists-badge-${index}">ARTISTS</span>
                     </div>
                 `;
                 imagePreviewGrid.appendChild(col);
 
-                // Add to banner selection lists
-                const homeBannerItem = document.createElement('div');
-                homeBannerItem.className = `banner-selection-item ${index === selectedHomeBannerIndex ? 'selected' : ''}`;
-                homeBannerItem.innerHTML = `
-                    <input type="radio" name="home-banner" value="${index}" ${index === selectedHomeBannerIndex ? 'checked' : ''}>
-                    <img src="${imageUrl}" alt="Image ${index + 1}">
-                    <span>Image ${index + 1}</span>
-                `;
-                homeBannerSelection.appendChild(homeBannerItem);
+                // Create a low-resolution version for preview
+                createLowResImage(originalImageUrl, (lowResImageUrl) => {
+                    // Replace placeholder with actual image
+                    col.innerHTML = `
+                        <div class="image-item">
+                            <img src="${lowResImageUrl}" alt="Image ${index + 1}" data-original="${originalImageUrl}">
+                            <span class="banner-badge home-banner-badge ${index === selectedHomeBannerIndex ? '' : 'd-none'}" id="home-badge-${index}">HOME</span>
+                            <span class="banner-badge artists-banner-badge ${index === selectedArtistsBannerIndex ? '' : 'd-none'}" id="artists-badge-${index}">ARTISTS</span>
+                        </div>
+                    `;
 
-                const artistsBannerItem = document.createElement('div');
-                artistsBannerItem.className = `banner-selection-item ${index === selectedArtistsBannerIndex ? 'selected' : ''}`;
-                artistsBannerItem.innerHTML = `
-                    <input type="radio" name="artists-banner" value="${index}" ${index === selectedArtistsBannerIndex ? 'checked' : ''}>
-                    <img src="${imageUrl}" alt="Image ${index + 1}">
-                    <span>Image ${index + 1}</span>
-                `;
-                artistsBannerSelection.appendChild(artistsBannerItem);
+                    // Add to banner selection lists with low-res image
+                    const homeBannerItem = document.createElement('div');
+                    homeBannerItem.className = `banner-selection-item ${index === selectedHomeBannerIndex ? 'selected' : ''}`;
+                    homeBannerItem.innerHTML = `
+                        <input type="radio" name="home-banner" value="${index}" ${index === selectedHomeBannerIndex ? 'checked' : ''}>
+                        <img src="${lowResImageUrl}" alt="Image ${index + 1}">
+                        <span>Image ${index + 1}</span>
+                    `;
+                    homeBannerSelection.appendChild(homeBannerItem);
+
+                    const artistsBannerItem = document.createElement('div');
+                    artistsBannerItem.className = `banner-selection-item ${index === selectedArtistsBannerIndex ? 'selected' : ''}`;
+                    artistsBannerItem.innerHTML = `
+                        <input type="radio" name="artists-banner" value="${index}" ${index === selectedArtistsBannerIndex ? 'checked' : ''}>
+                        <img src="${lowResImageUrl}" alt="Image ${index + 1}">
+                        <span>Image ${index + 1}</span>
+                    `;
+                    artistsBannerSelection.appendChild(artistsBannerItem);
+                });
             };
             reader.readAsDataURL(file);
         });
@@ -302,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                                 return `
                                     <div class="image-item-admin mr-2 mb-2" style="position: relative;">
-                                        <img src="${imgUrl}" alt="Image ${index + 1}" class="img-thumbnail" style="max-width: 100px;">
+                                        <img src="${imgUrl}" alt="Image ${index + 1}" class="img-thumbnail" style="max-width: 80px; max-height: 80px; object-fit: cover;">
                                         <div style="position: absolute; top: 5px; right: 5px;">${badges}</div>
                                     </div>
                                 `;
