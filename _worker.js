@@ -21,14 +21,19 @@
 
 
 /**
- * A helper function to return a JSON response.
+ * A helper function to return a JSON response with CORS headers.
  * @param {object} data - The data to serialize as JSON.
  * @param {number} [status=200] - The HTTP status code.
  * @returns {Response}
  */
 const jsonResponse = (data, status = 200) => {
     return new Response(JSON.stringify(data), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        },
         status,
     });
 };
@@ -39,20 +44,45 @@ export default {
         const { pathname } = url;
         const method = request.method;
 
+        // Handle CORS preflight requests
+        if (method === 'OPTIONS') {
+            return new Response(null, {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type'
+                }
+            });
+        }
+
+        console.log(`${method} ${pathname}`);
+
         try {
             // GET /admin/api/artists - List all artists
             if (method === 'GET' && pathname === '/admin/api/artists') {
+                console.log('Fetching artists...');
+                if (!env.ARTIST_KV) return jsonResponse({ error: "Configuration error: ARTIST_KV binding not found." }, 500);
+                
                 const { keys } = await env.ARTIST_KV.list();
+                console.log(`Found ${keys.length} artist keys`);
+                
                 const artists = await Promise.all(keys.map(key => env.ARTIST_KV.get(key.name, 'json')));
+                console.log('Artists loaded:', artists);
+                
                 return jsonResponse(artists);
             }
 
             // POST /admin/api/artists - Create a new artist
             if (method === 'POST' && pathname === '/admin/api/artists') {
+                console.log('Creating new artist...');
+                if (!env.ARTIST_BUCKET || !env.ARTIST_KV) return jsonResponse({ error: "Configuration error: ARTIST_BUCKET or ARTIST_KV binding not found." }, 500);
+                
                 const formData = await request.formData();
                 const artistName = formData.get('name');
                 const artistBio = formData.get('bio');
-                const files = formData.getAll('images'); // 'images' is the field name for files
+                const files = formData.getAll('images');
+
+                console.log('Artist data:', { name: artistName, bio: artistBio, fileCount: files.length });
 
                 if (!artistName) {
                     return jsonResponse({ error: 'Artist name is required' }, 400);
@@ -61,14 +91,21 @@ export default {
                 const artistId = `artist_${Date.now()}`;
                 const imageUrls = [];
 
-                for (const file of files) {
-                    // Make sure it's a file with a name
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
                     if (file instanceof File && file.name) {
-                        const imageKey = `${artistId}/${file.name}`;
+                        console.log(`Uploading file: ${file.name}`);
+                        
+                        // Create a safe filename
+                        const fileExtension = file.name.split('.').pop();
+                        const safeFileName = `image_${i + 1}.${fileExtension}`;
+                        const imageKey = `${artistId}/${safeFileName}`;
+                        
+                        console.log(`Safe filename: ${safeFileName}`);
+                        
                         await env.ARTIST_BUCKET.put(imageKey, await file.arrayBuffer(), {
                             httpMetadata: { contentType: file.type },
                         });
-                        // The URL to access the image will be like /images/artist_id/filename
                         imageUrls.push(`/images/${imageKey}`);
                     }
                 }
@@ -80,13 +117,16 @@ export default {
                     images: imageUrls,
                 };
 
+                console.log('Saving artist data:', artistData);
                 await env.ARTIST_KV.put(artistId, JSON.stringify(artistData));
+                
                 return jsonResponse(artistData, 201);
             }
 
             // GET /images/:artistId/:imageName - Serve an image from R2
             const imageMatch = pathname.match(/^\/images\/([^\/]+)\/([^\/]+)$/);
             if (method === 'GET' && imageMatch) {
+                if (!env.ARTIST_BUCKET) return jsonResponse({ error: "Configuration error: ARTIST_BUCKET binding not found." }, 500);
                 const [_, artistId, imageName] = imageMatch;
                 const imageKey = `${artistId}/${imageName}`;
 
@@ -106,6 +146,7 @@ export default {
             // DELETE /admin/api/artists/:id - Delete an artist
             const deleteMatch = pathname.match(/^\/admin\/api\/artists\/([^\/]+)$/);
             if (method === 'DELETE' && deleteMatch) {
+                if (!env.ARTIST_BUCKET || !env.ARTIST_KV) return jsonResponse({ error: "Configuration error: ARTIST_BUCKET or ARTIST_KV binding not found." }, 500);
                 const [_, id] = deleteMatch;
                 
                 const artistData = await env.ARTIST_KV.get(id, 'json');
