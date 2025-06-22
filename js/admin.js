@@ -69,11 +69,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error(`Failed to fetch artists: ${response.statusText}`);
             }
+            
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Server returned non-JSON response');
+            }
+            
             const artists = await response.json();
             renderArtists(artists);
         } catch (error) {
             console.error('Error loading artists:', error);
-            artistListContainer.innerHTML = '<p>Error loading artists. Please try again later.</p>';
+            artistListContainer.innerHTML = '<p>Error loading artists. Please check the console for details.</p>';
         }
     }
 
@@ -167,8 +174,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to save artist.');
+                let errorMessage = 'Failed to save artist.';
+                try {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } else {
+                        const textResponse = await response.text();
+                        errorMessage = `Server error: ${textResponse.substring(0, 100)}...`;
+                    }
+                } catch (parseError) {
+                    errorMessage = `Server error (${response.status}): ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
             }
 
             // Clear the form and reload the artists
@@ -199,8 +218,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || 'Failed to delete artist.');
+                        let errorMessage = 'Failed to delete artist.';
+                        try {
+                            const contentType = response.headers.get('content-type');
+                            if (contentType && contentType.includes('application/json')) {
+                                const errorData = await response.json();
+                                errorMessage = errorData.error || errorMessage;
+                            } else {
+                                const textResponse = await response.text();
+                                errorMessage = `Server error: ${textResponse.substring(0, 100)}...`;
+                            }
+                        } catch (parseError) {
+                            errorMessage = `Server error (${response.status}): ${response.statusText}`;
+                        }
+                        throw new Error(errorMessage);
                     }
                     
                     // Remove from UI

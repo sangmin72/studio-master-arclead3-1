@@ -10,6 +10,13 @@ async function loadSliderImages() {
             return;
         }
         
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            console.error('Server returned non-JSON response, keeping default slider');
+            return;
+        }
+        
         const artists = await response.json();
         
         if (!artists || artists.length === 0) {

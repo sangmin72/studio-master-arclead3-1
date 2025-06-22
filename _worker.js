@@ -61,15 +61,29 @@ export default {
             // GET /admin/api/artists - List all artists
             if (method === 'GET' && pathname === '/admin/api/artists') {
                 console.log('Fetching artists...');
-                if (!env.ARTIST_KV) return jsonResponse({ error: "Configuration error: ARTIST_KV binding not found." }, 500);
+                if (!env.ARTIST_KV) {
+                    console.error('ARTIST_KV binding not found');
+                    return jsonResponse({ error: "Configuration error: ARTIST_KV binding not found." }, 500);
+                }
                 
                 const { keys } = await env.ARTIST_KV.list();
                 console.log(`Found ${keys.length} artist keys`);
                 
-                const artists = await Promise.all(keys.map(key => env.ARTIST_KV.get(key.name, 'json')));
-                console.log('Artists loaded:', artists);
+                const artists = await Promise.all(keys.map(async (key) => {
+                    try {
+                        const artistData = await env.ARTIST_KV.get(key.name, 'json');
+                        return artistData;
+                    } catch (error) {
+                        console.error(`Error loading artist ${key.name}:`, error);
+                        return null;
+                    }
+                }));
                 
-                return jsonResponse(artists);
+                // Filter out null values
+                const validArtists = artists.filter(artist => artist !== null);
+                console.log(`Artists loaded: ${validArtists.length} valid artists`);
+                
+                return jsonResponse(validArtists);
             }
 
             // POST /admin/api/artists - Create a new artist
@@ -172,7 +186,11 @@ export default {
             }
 
             // If the request does not match any of the API routes, fall through to serving static assets.
-            return env.ASSETS.fetch(request);
+            if (env.ASSETS) {
+                return env.ASSETS.fetch(request);
+            } else {
+                return new Response('Not Found', { status: 404 });
+            }
 
         } catch (e) {
             console.error(e);
