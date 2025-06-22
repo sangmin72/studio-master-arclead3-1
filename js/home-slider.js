@@ -1,12 +1,5 @@
 $(document).ready(function() {
     loadSliderImages();
-    
-    // 페이지 로드 후 카루셀 자동 재생 확인
-    setTimeout(() => {
-        if ($('#welcomeSlider').length) {
-            $('#welcomeSlider').carousel('cycle');
-        }
-    }, 1000);
 });
 
 async function loadSliderImages() {
@@ -121,30 +114,14 @@ async function loadSliderImages() {
         // Reinitialize the carousel to ensure proper functionality
         $('#welcomeSlider').carousel('dispose');
         $('#welcomeSlider').carousel({
-            interval: 4000,  // 4초마다 자동 슬라이드
-            pause: 'hover',  // 마우스 호버 시 일시정지
-            ride: 'carousel' // 자동 시작
+            interval: 5000,
+            pause: 'hover'
         });
-        
-        // 강제로 자동 재생 시작
-        setTimeout(() => {
-            $('#welcomeSlider').carousel('cycle');
-        }, 100);
         
         console.log(`Slider updated with ${selectedImages.length} slides (${bannerImages.length} unique images, repeated as needed)`);
         
     } catch (error) {
         console.error('Error loading slider images:', error);
-        
-        // 에러 발생 시에도 기본 카루셀 자동 재생 활성화
-        setTimeout(() => {
-            $('#welcomeSlider').carousel({
-                interval: 4000,
-                pause: 'hover',
-                ride: 'carousel'
-            });
-            $('#welcomeSlider').carousel('cycle');
-        }, 500);
     }
 }
 
