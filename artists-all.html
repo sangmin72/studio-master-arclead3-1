@@ -6,303 +6,128 @@
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-    <!-- Title -->
-    <title>ARCLEAD - All Artists</title>
+    <!-- Title  -->
+    <title>전체 아티스트 - Arclead Studio</title>
 
-    <!-- Favicon -->
+    <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
 
-    <!-- Core Stylesheet -->
+    <!-- Core Style CSS -->
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="style.css">
 
-    <style>
-        /* Artists All Page Specific Styles */
-        .artists-all-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #000;
-            overflow: hidden;
-            z-index: 1000;
-        }
-
-        .artists-grid {
-            width: 100%;
-            height: 100%;
-            display: grid;
-            gap: 2px;
-            padding: 2px;
-        }
-
-        .artist-item {
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .artist-item:hover {
-            transform: scale(1.02);
-            z-index: 10;
-        }
-
-        .artist-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .artist-name {
-            position: absolute;
-            top: -35px;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px 12px;
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            border-radius: 4px 4px 0 0;
-        }
-
-        .loading-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 18px;
-            text-align: center;
-        }
-
-        .error-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #ff6b6b;
-            font-size: 18px;
-            text-align: center;
-        }
-
-        .back-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            z-index: 1001;
-            transition: background 0.3s ease;
-        }
-
-        .back-button:hover {
-            background: rgba(255, 255, 255, 1);
-        }
-
-        /* Responsive grid layouts */
-        @media (max-width: 768px) {
-            .artist-name {
-                font-size: 12px;
-                padding: 6px 8px;
-                top: -30px;
-            }
-        }
-    </style>
 </head>
 
 <body>
-    <div class="artists-all-container">
-        <button class="back-button" onclick="goBack()">← 뒤로가기</button>
-        
-        <div class="loading-message" id="loadingMessage">
-            아티스트 정보를 불러오는 중...
+    <!-- Preloader Start -->
+    <div id="preloader">
+        <div class="preload-content">
+            <div id="original-load"></div>
         </div>
-        
-        <div class="error-message" id="errorMessage" style="display: none;">
-            아티스트 정보를 불러올 수 없습니다.
+    </div>
+    <!-- Preloader End -->
+
+    <!-- Gradient Background Overlay -->
+    <div class="gradient-background-overlay"></div>
+
+    <!-- Header Area Start -->
+    <header class="header-area">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="menu-area d-flex justify-content-between">
+                        <!-- Logo Area  -->
+                        <div class="logo-area">
+                            <a href="index.html"><img src="img/logos/logo-horizon-arclead.png" alt=""></a>
+                        </div>
+
+                        <!-- Real-time Clock -->
+                        <div class="datetime-display">
+                            <span id="current-datetime"></span>
+                        </div>
+
+                        <div class="menu-content-area d-flex align-items-center">
+                            <!-- Header Social Area -->
+                            <div class="header-social-area d-flex align-items-center">
+                                <a href="#" data-toggle="tooltip" data-placement="bottom" title="YouTube"><i class="fa fa-youtube" aria-hidden="true"></i></a>
+                                <a href="#" data-toggle="tooltip" data-placement="bottom" title="Instagram"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+                            </div>
+                            <!-- Menu Icon -->
+                            <a href="#" class="menu-icon"><img src="img/core-img/menu-icon.png" alt=""></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="artists-grid" id="artistsGrid" style="display: none;">
-            <!-- Artists will be loaded here dynamically -->
+    </header>
+    <!-- Header Area End -->
+
+    <!-- Side Social Area -->
+    <div class="social-sidebar-area">
+        <!-- Social Area -->
+        <div class="social-info-area">
+            <a href="#" data-toggle="tooltip" data-placement="right" title="YouTube"><i class="fa fa-youtube" aria-hidden="true"></i></a>
+            <a href="#" data-toggle="tooltip" data-placement="right" title="Instagram"><i class="fa fa-instagram" aria-hidden="true"></i></a>
         </div>
     </div>
 
-    <!-- jQuery -->
+    <!-- ***** Side Menu Area Start ***** -->
+    <div class="mainMenu d-flex align-items-center justify-content-center">
+        <!-- Close Icon -->
+        <div class="closeIcon">
+            <i class="fa fa-times" aria-hidden="true"></i>
+        </div>
+        <!-- Logo Area -->
+        <div class="logo-area">
+            <a href="index.html"><img src="img/logos/logo-horizon-arclead.png" alt=""></a>
+        </div>
+        <!-- Nav -->
+        <nav class="mainNav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about-me.html">About</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="artists-all.html" class="active">All Artists</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="elements.html">Elements</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- ***** Side Menu Area End ***** -->
+
+    <!-- Main Content Area Start -->
+    <div class="artists-all-area">
+        <div class="container-fluid h-100">
+            <div class="row h-100">
+                <div class="col-12 h-100">
+                    <div class="artists-grid-container" id="artistsGrid">
+                        <!-- Artists will be loaded here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Main Content Area End -->
+
+    <!-- jQuery (Necessary for All JavaScript Plugins) -->
     <script src="js/jquery/jquery-2.2.4.min.js"></script>
-    
-    <script>
-        let artists = [];
+    <!-- Popper js -->
+    <script src="js/popper.min.js"></script>
+    <!-- Bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Plugins js -->
+    <script src="js/plugins.js"></script>
+    <!-- Active js -->
+    <script src="js/active.js"></script>
+    <!-- DateTime js -->
+    <script src="js/datetime.js"></script>
+    <!-- Artists All js -->
+    <script src="js/artists-all.js"></script>
 
-        // Calculate optimal grid layout
-        function calculateGridLayout(count) {
-            if (count === 0) return { cols: 1, rows: 1 };
-            
-            const aspectRatio = window.innerWidth / window.innerHeight;
-            let bestCols = 1;
-            let bestRows = 1;
-            let bestRatio = Infinity;
-
-            for (let cols = 1; cols <= count; cols++) {
-                const rows = Math.ceil(count / cols);
-                const gridRatio = cols / rows;
-                const ratioDiff = Math.abs(gridRatio - aspectRatio);
-                
-                if (ratioDiff < bestRatio) {
-                    bestRatio = ratioDiff;
-                    bestCols = cols;
-                    bestRows = rows;
-                }
-            }
-
-            return { cols: bestCols, rows: bestRows };
-        }
-
-        // Apply grid layout
-        function applyGridLayout(count) {
-            const grid = document.getElementById('artistsGrid');
-            const layout = calculateGridLayout(count);
-            
-            grid.style.gridTemplateColumns = `repeat(${layout.cols}, 1fr)`;
-            grid.style.gridTemplateRows = `repeat(${layout.rows}, 1fr)`;
-        }
-
-        // Load artists data
-        async function loadArtists() {
-            try {
-                const response = await fetch('/admin/api/artists');
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Response is not JSON');
-                }
-                
-                artists = await response.json();
-                console.log('Loaded artists:', artists);
-                
-                if (artists.length === 0) {
-                    showError('등록된 아티스트가 없습니다.');
-                    return;
-                }
-                
-                displayArtists();
-                
-            } catch (error) {
-                console.error('Error loading artists:', error);
-                showError('아티스트 정보를 불러올 수 없습니다.');
-            }
-        }
-
-        // Display artists
-        function displayArtists() {
-            const grid = document.getElementById('artistsGrid');
-            const loadingMessage = document.getElementById('loadingMessage');
-            
-            // Filter artists that have banner images
-            const artistsWithBanners = artists.filter(artist => 
-                artist.artistsBannerIndices && 
-                artist.artistsBannerIndices.length > 0 && 
-                artist.images && 
-                artist.images.length > 0
-            );
-            
-            if (artistsWithBanners.length === 0) {
-                showError('배너 이미지가 설정된 아티스트가 없습니다.');
-                return;
-            }
-            
-            // Apply grid layout
-            applyGridLayout(artistsWithBanners.length);
-            
-            // Create artist items
-            grid.innerHTML = '';
-            artistsWithBanners.forEach(artist => {
-                const bannerIndex = artist.artistsBannerIndices[0]; // Use first banner image
-                const bannerImage = artist.images[bannerIndex];
-                
-                if (!bannerImage) return;
-                
-                const artistItem = document.createElement('div');
-                artistItem.className = 'artist-item';
-                artistItem.onclick = () => openArtistProfile(artist.englishName);
-                
-                artistItem.innerHTML = `
-                    <div class="artist-name">${artist.koreanName || artist.englishName}</div>
-                    <img class="artist-image" src="/images/${artist.englishName}/${bannerImage}" alt="${artist.koreanName || artist.englishName}" loading="lazy">
-                `;
-                
-                grid.appendChild(artistItem);
-            });
-            
-            // Show grid, hide loading
-            loadingMessage.style.display = 'none';
-            grid.style.display = 'grid';
-        }
-
-        // Show error message
-        function showError(message) {
-            const loadingMessage = document.getElementById('loadingMessage');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            loadingMessage.style.display = 'none';
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-        }
-
-        // Open artist profile
-        function openArtistProfile(englishName) {
-            window.location.href = `artist.html?artist=${encodeURIComponent(englishName)}`;
-        }
-
-        // Go back function
-        function goBack() {
-            if (document.referrer) {
-                window.history.back();
-            } else {
-                window.location.href = 'index.html';
-            }
-        }
-
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if (artists.length > 0) {
-                const artistsWithBanners = artists.filter(artist => 
-                    artist.artistsBannerIndices && 
-                    artist.artistsBannerIndices.length > 0 && 
-                    artist.images && 
-                    artist.images.length > 0
-                );
-                
-                if (artistsWithBanners.length > 0) {
-                    applyGridLayout(artistsWithBanners.length);
-                }
-            }
-        });
-
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            loadArtists();
-        });
-    </script>
 </body>
 
 </html> 
